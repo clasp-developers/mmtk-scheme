@@ -9,7 +9,7 @@ use mmtk::vm::VMBinding;
 //use mmtk::MMTK;
 
 pub mod active_plan; //new
-//pub mod api; //new
+//pub mod api; //new, must stay commented out else compilation fails 6/4/2024
 pub mod collection; //new
 pub mod object_model;
 pub mod reference_glue; //new
