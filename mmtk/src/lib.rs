@@ -1,6 +1,18 @@
+//lib.rs wip
+extern crate libc; //new
 extern crate mmtk;
+extern crate lazy_static; //new
 
+//all new
+use mmtk::vm::VMBinding;
+use mmtk::MMTKBuilder;
+use mmtk::MMTK;
+
+//pub mod active_plan; //new
+//pub mod api; //new
+//pub mod collection; //new
 pub mod object_model;
+//pub mod reference_glue; //new
 pub mod scanning;
 
 mod slots;
@@ -11,12 +23,18 @@ pub struct DummyVM;
 
 /// The edge type of 
 
-impl mmtk::vm::VMBinding for DummyVM {
+impl VMBinding for DummyVM {
     // Implement required VMBinding traits here
     // Compilation fails because I'm missing implementations
     type VMObjectModel = object_model::VMObjectModel;
     type VMScanning = scanning::VMScanning;
+    type VMSlot = slots::DummyVMSlot;
+    type VMMemorySlice = slots::DummyVMMemorySlice;
 }
+
+//standard libraries
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Mutex;
 
 #[no_mangle]
 pub extern "C" fn initialize_mmtk()
