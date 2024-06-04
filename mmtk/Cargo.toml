@@ -8,6 +8,7 @@ mmtk = { git = "https://github.com/mmtk/mmtk-core", branch = "master" }
 lazy_static = { version = "1.1.0" }
 log = { version = "0.4", features = ["max_level_trace", "release_max_level_off"] }
 libc = "0.2"
+atomic = "0.6"
 
 [lib]
 name = "mmtkscheme"

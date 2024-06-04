@@ -1,5 +1,7 @@
 //slots.rs wip
-use atomic::Atomic;
+extern crate atomic;
+use self::atomic::Atomic;
+//use std::sync::atomic;
 use mmtk::util::constants::LOG_BYTES_IN_ADDRESS;
 use mmtk::{
     util::{Address, ObjectReference},

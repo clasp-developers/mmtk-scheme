@@ -5,8 +5,8 @@ extern crate lazy_static; //new
 
 //all new
 use mmtk::vm::VMBinding;
-use mmtk::MMTKBuilder;
-use mmtk::MMTK;
+//use mmtk::MMTKBuilder;
+//use mmtk::MMTK;
 
 //pub mod active_plan; //new
 //pub mod api; //new
@@ -33,8 +33,8 @@ impl VMBinding for DummyVM {
 }
 
 //standard libraries
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Mutex;
+//use std::sync::atomic::{AtomicBool, Ordering};
+//use std::sync::Mutex;
 
 #[no_mangle]
 pub extern "C" fn initialize_mmtk()
