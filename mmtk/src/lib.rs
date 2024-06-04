@@ -8,11 +8,11 @@ use mmtk::vm::VMBinding;
 //use mmtk::MMTKBuilder;
 //use mmtk::MMTK;
 
-//pub mod active_plan; //new
+pub mod active_plan; //new
 //pub mod api; //new
-//pub mod collection; //new
+pub mod collection; //new
 pub mod object_model;
-//pub mod reference_glue; //new
+pub mod reference_glue; //new
 pub mod scanning;
 
 mod slots;
@@ -25,9 +25,11 @@ pub struct DummyVM;
 
 impl VMBinding for DummyVM {
     // Implement required VMBinding traits here
-    // Compilation fails because I'm missing implementations
     type VMObjectModel = object_model::VMObjectModel;
     type VMScanning = scanning::VMScanning;
+    type VMCollection = collection::VMCollection;
+    type VMActivePlan = active_plan::VMActivePlan;
+    type VMReferenceGlue = reference_glue::VMReferenceGlue;
     type VMSlot = slots::DummyVMSlot;
     type VMMemorySlice = slots::DummyVMMemorySlice;
 }
