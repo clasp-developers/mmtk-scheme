@@ -1,14 +1,16 @@
-use crate::slots::DummyVM;
+
+use crate::slots::DummyVMSlot;
 use crate::DummyVM;
 use mmtk::util::opaque_pointer::*;
 use mmtk::util::ObjectReference;
-use mmtk::vm::SlotVisitor;
 use mmtk::vm::RootsWorkFactory;
 use mmtk::vm::Scanning;
+use mmtk::vm::SlotVisitor;
 use mmtk::Mutator;
 
 pub struct VMScanning {}
 
+// Documentation: https://docs.mmtk.io/api/mmtk/vm/scanning/trait.Scanning.html
 impl Scanning<DummyVM> for VMScanning {
     fn scan_roots_in_mutator_thread(
         _tls: VMWorkerThread,

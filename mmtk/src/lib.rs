@@ -3,6 +3,9 @@ extern crate mmtk;
 pub mod object_model;
 pub mod scanning;
 
+mod slots;
+
+
 #[derive(Default)]
 pub struct DummyVM;
 

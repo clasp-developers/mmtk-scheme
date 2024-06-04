@@ -5,14 +5,25 @@ use mmtk::vm::*;
 
 pub struct VMObjectModel {}
 
-// This is intentionally set to a non-zero value to see if it breaks.
-// Change this if you want to test other values.
+// This is the offset from the allocation result to the object reference for the object.
+// Many methods like `address_to_ref` and `ref_to_address` use this constant.
+// For bindings that this offset is not a constant, you can implement the calculation in the methods, and
+// remove this constant.
 pub const OBJECT_REF_OFFSET: usize = 4;
 
+// Documentation: https://docs.mmtk.io/api/mmtk/vm/object_model/trait.ObjectModel.html
 impl ObjectModel<DummyVM> for VMObjectModel {
+    // Global metadata
+
     const GLOBAL_LOG_BIT_SPEC: VMGlobalLogBitSpec = VMGlobalLogBitSpec::in_header(0);
+
+    // Local metadata
+
+    // Forwarding pointers have to be in the header. It is okay to overwrite the object payload with a forwarding pointer.
+    // FIXME: The bit offset needs to be set properly.
     const LOCAL_FORWARDING_POINTER_SPEC: VMLocalForwardingPointerSpec =
         VMLocalForwardingPointerSpec::in_header(0);
+    // The other metadata can be put in the side metadata.
     const LOCAL_FORWARDING_BITS_SPEC: VMLocalForwardingBitsSpec =
         VMLocalForwardingBitsSpec::in_header(0);
     const LOCAL_MARK_BIT_SPEC: VMLocalMarkBitSpec = VMLocalMarkBitSpec::in_header(0);
@@ -38,6 +49,7 @@ impl ObjectModel<DummyVM> for VMObjectModel {
     }
 
     fn get_size_when_copied(object: ObjectReference) -> usize {
+        // FIXME: This assumes the object size is unchanged during copying.
         Self::get_current_size(object)
     }
 
