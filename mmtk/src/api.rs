@@ -72,15 +72,19 @@ pub fn mmtk_init(builder: *mut MMTKBuilder) {
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
 
     println!("initializing singleton :P");
+
     if !MMTK_INITIALIZED.load(Ordering::Relaxed) {
        let _ = &*crate::SINGLETON;
        MMTK_INITIALIZED.store(true, Ordering::Relaxed);
+       println!("MMTK has been initialized and set in SINGLETON");
+    } else {
+      println!("MMTK is already initialized");
     };
 
     /*
     // Set SINGLETON to the instance.
     SINGLETON.set(mmtk).unwrap_or_else(|_| {
-        panic!("Failed to set SINGLETON");
+       panic!("Failed to set SINGLETON");
     });
     */
 }
