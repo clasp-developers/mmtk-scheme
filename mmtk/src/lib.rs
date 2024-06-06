@@ -1,12 +1,9 @@
-//lib.rs trying to get lazy static to work but using the freak 
-//nonsense from mmtk dummyvm heeeeeeeeeeeelp
-
+//lib.rs trying to get lazy static to work
 
 extern crate libc; 
 extern crate mmtk;
 extern crate lazy_static;
 use lazy_static::lazy_static;
-
 
 use mmtk::vm::VMBinding;
 use mmtk::MMTKBuilder;
@@ -51,6 +48,12 @@ lazy_static! {
         Mutex::new(MMTKBuilder::new())
     };
     pub static ref SINGLETON: Box<MMTK<DummyVM>> = {
+    	let builder = BUILDER.lock().unwrap();
+	let mmtk = mmtk::memory_manager::mmtk_init(&builder);
+	mmtk
+    };
+    /*
+    pub static ref SINGLETON: Box<MMTK<DummyVM>> = {
         let builder = BUILDER.lock().unwrap();
         debug_assert!(!MMTK_INITIALIZED.load(Ordering::SeqCst));
         println!("initializing SINGLETON");
@@ -58,6 +61,7 @@ lazy_static! {
         MMTK_INITIALIZED.store(true, Ordering::Relaxed);
         ret
     };
+    */
 }
 
 pub static MMTK_INITIALIZED: AtomicBool = AtomicBool::new(false);
@@ -66,12 +70,15 @@ pub static MMTK_INITIALIZED: AtomicBool = AtomicBool::new(false);
 pub extern "C" fn initialize_mmtk() {
     println!("Calling initialize_mmtk from Rust");
     let _ = &*BUILDER; //access BUILDER to trigger initialization
-    let _ = &*SINGLETON; //access SINGLETON to trigger initialization
+    if !MMTK_INITIALIZED.load(Ordering::Relaxed) {
+       let _ = &*SINGLETON; //initialize singleton
+       MMTK_INITIALIZED.store(true, Ordering::Relaxed);
+    }
 }
 
 //access singleton
 fn mmtk() -> &'static MMTK<DummyVM> {
-    SINGLETON.get().unwrap()
+   &*SINGLETON 
 }
 
 
