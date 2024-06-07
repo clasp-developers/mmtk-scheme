@@ -3,7 +3,7 @@
 
 use crate::mmtk;
 use crate::DummyVM;
-//use crate::SINGLETON;
+use crate::SINGLETON;
 use libc::c_char;
 use mmtk::memory_manager;
 use mmtk::scheduler::GCWorker;
@@ -49,15 +49,17 @@ pub extern "C" fn mmtk_set_fixed_heap_size(builder: *mut MMTKBuilder, heap_size:
         ))
 }
 
+/*
+//code from new-dummyvm, doesn't compile
 #[no_mangle]
 pub fn mmtk_init(builder: *mut MMTKBuilder) {
     let builder = unsafe { Box::from_raw(builder) };
     let closure = move || memory_manager::mmtk_init::<DummyVM>(&builder);
     SINGLETON.initialize_once(&closure);
 }
+*/
 
 
-/*
 #[no_mangle]
 pub fn mmtk_init(builder: *mut MMTKBuilder) {
     let builder = unsafe { Box::from_raw(builder) };
@@ -82,7 +84,7 @@ pub fn mmtk_init(builder: *mut MMTKBuilder) {
     });
     */
 }
-*/
+
 
 #[no_mangle]
 pub extern "C" fn mmtk_bind_mutator(tls: VMMutatorThread) -> *mut Mutator<DummyVM> {
