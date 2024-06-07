@@ -3,7 +3,7 @@
 
 use crate::mmtk;
 use crate::DummyVM;
-use crate::SINGLETON;
+//use crate::SINGLETON;
 use libc::c_char;
 use mmtk::memory_manager;
 use mmtk::scheduler::GCWorker;
@@ -14,6 +14,8 @@ use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
 
+use MMTK_INITIALIZED;
+use std::sync::atomic::{Ordering};
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
@@ -50,6 +52,15 @@ pub extern "C" fn mmtk_set_fixed_heap_size(builder: *mut MMTKBuilder, heap_size:
 #[no_mangle]
 pub fn mmtk_init(builder: *mut MMTKBuilder) {
     let builder = unsafe { Box::from_raw(builder) };
+    let closure = move || memory_manager::mmtk_init::<DummyVM>(&builder);
+    SINGLETON.initialize_once(&closure);
+}
+
+
+/*
+#[no_mangle]
+pub fn mmtk_init(builder: *mut MMTKBuilder) {
+    let builder = unsafe { Box::from_raw(builder) };
 
     // Create MMTK instance.
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
@@ -71,6 +82,7 @@ pub fn mmtk_init(builder: *mut MMTKBuilder) {
     });
     */
 }
+*/
 
 #[no_mangle]
 pub extern "C" fn mmtk_bind_mutator(tls: VMMutatorThread) -> *mut Mutator<DummyVM> {
