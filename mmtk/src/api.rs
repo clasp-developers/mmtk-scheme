@@ -14,26 +14,9 @@ use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
 
-use MMTK_INITIALIZED;
-use std::sync::atomic::Ordering;
-
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
-
-//new
-use lazy_static::lazy_static;
-
-lazy_static!{
-    static ref BRUH: i32 = {
-        81
-    };
-}
-
-#[no_mangle]
-pub extern "C" fn print_lazy_static_variable(){
-    println!("lazy static variable value: {}", *BRUH);
-}
 
 
 #[no_mangle]
