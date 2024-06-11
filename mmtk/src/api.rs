@@ -14,12 +14,8 @@ use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
 
-use MMTK_INITIALIZED;
-use std::sync::atomic::{Ordering};
-
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
-
 
 #[no_mangle]
 pub extern "C" fn mmtk_create_builder() -> *mut MMTKBuilder {
@@ -49,17 +45,6 @@ pub extern "C" fn mmtk_set_fixed_heap_size(builder: *mut MMTKBuilder, heap_size:
         ))
 }
 
-/*
-//code from new-dummyvm, doesn't compile
-#[no_mangle]
-pub fn mmtk_init(builder: *mut MMTKBuilder) {
-    let builder = unsafe { Box::from_raw(builder) };
-    let closure = move || memory_manager::mmtk_init::<DummyVM>(&builder);
-    SINGLETON.initialize_once(&closure);
-}
-*/
-
-
 #[no_mangle]
 pub fn mmtk_init(builder: *mut MMTKBuilder) {
     let builder = unsafe { Box::from_raw(builder) };
@@ -67,24 +52,11 @@ pub fn mmtk_init(builder: *mut MMTKBuilder) {
     // Create MMTK instance.
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
 
-    println!("initializing singleton :P");
-
-    if !MMTK_INITIALIZED.load(Ordering::Relaxed) {
-       let _ = &*crate::SINGLETON;
-       MMTK_INITIALIZED.store(true, Ordering::Relaxed);
-       println!("MMTK has been initialized and set in SINGLETON");
-    } else {
-      println!("MMTK is already initialized");
-    };
-
-    /*
     // Set SINGLETON to the instance.
     SINGLETON.set(mmtk).unwrap_or_else(|_| {
-       panic!("Failed to set SINGLETON");
+        panic!("Failed to set SINGLETON");
     });
-    */
 }
-
 
 #[no_mangle]
 pub extern "C" fn mmtk_bind_mutator(tls: VMMutatorThread) -> *mut Mutator<DummyVM> {
