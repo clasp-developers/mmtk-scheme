@@ -21,6 +21,10 @@ void mmtk_c_test();
   // An opaque pointer to a VMThread
   typedef void* VMThread;
 
+void* mmtk_create_builder();
+
+int mmtk_set_option_from_string( void* builder, const char* name, const  char* value );
+
   /**
    * Initialize MMTk instance
    */

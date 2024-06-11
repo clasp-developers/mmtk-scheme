@@ -46,8 +46,8 @@ pub extern "C" fn mmtk_set_fixed_heap_size(builder: *mut MMTKBuilder, heap_size:
 }
 
 #[no_mangle]
-pub fn mmtk_init(builder: *mut MMTKBuilder) {
-    let builder = unsafe { Box::from_raw(builder) };
+pub extern "C" fn mmtk_init(raw_builder: *mut MMTKBuilder) {
+    let builder = unsafe { Box::from_raw(raw_builder) };
 
     // Create MMTK instance.
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
