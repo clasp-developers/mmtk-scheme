@@ -13,6 +13,8 @@ use mmtk::AllocationSemantics;
 use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
+use std::ffi::CString;
+use mmtk::vm::ObjectModel;
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
@@ -256,6 +258,64 @@ pub extern "C" fn mmtk_get_malloc_bytes() -> usize {
     memory_manager::get_malloc_bytes(mmtk())
 }
 
+#[no_mangle]
+pub extern "C" fn mmtk_init_test() {
+    // We demonstrate the main workflow to initialize MMTk, create mutators and allocate objects.
+    println!("creating builder");
+    let builder = mmtk_create_builder();
+
+    // Set option by value using extern "C" wrapper.
+    let success = mmtk_set_fixed_heap_size(builder, 1048576);
+    println!("builder created successfully");
+    assert!(success);
+
+    // Set option by value.  We set the the option direcly using `MMTKOption::set`. Useful if
+    // the VM binding wants to set options directly, or if the VM binding has its own format for
+    // command line arguments.
+    let name = CString::new("plan").unwrap();
+    let val = CString::new("NoGC").unwrap();
+    let success = mmtk_set_option_from_string(builder, name.as_ptr(), val.as_ptr());
+    assert!(success);
+
+    // Set layout if necessary
+    // builder.set_vm_layout(layout);
+
+    // Init MMTk
+    println!("initializing mmtk");
+    mmtk_init(builder);
+    println!("mmtk initialized successfully");
+
+    // Create an MMTk mutator
+    println!("creating mutator");
+    let tls = VMMutatorThread(VMThread(OpaquePointer::UNINITIALIZED)); // FIXME: Use the actual thread pointer or identifier
+    println!("creating mutator 2");
+    let mutator = mmtk_bind_mutator(tls);
+    println!("mutator created successfully");
+
+    // Do an allocation
+    println!("doing an allocation");
+    let addr = mmtk_alloc(mutator, 16, 8, 0, mmtk::AllocationSemantics::Default);
+    println!("allocated");
+    assert!(!addr.is_zero());
+    println!("allocated successfully");
+
+    // Turn the allocation address into the object reference
+    println!("turning allocation address into obj reference");
+    let obj = crate::object_model::VMObjectModel::address_to_ref(addr);
+    println!("obj reference created successfully");
+
+    // Post allocation
+    println!("calling mmtk_post_alloc");
+    mmtk_post_alloc(mutator, obj, 16, mmtk::AllocationSemantics::Default);
+    println!("post allocation successful");
+
+    // If the thread quits, destroy the mutator.
+    println!("destroying mutator");
+    mmtk_destroy_mutator(mutator);
+    println!("mutator destroyed successfully");
+}
+
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -303,3 +363,4 @@ mod tests {
         mmtk_destroy_mutator(mutator);
     }
 }
+*/
