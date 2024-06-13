@@ -15,6 +15,7 @@ use mmtk::Mutator;
 use std::ffi::CStr;
 use std::ffi::CString;
 use mmtk::vm::ObjectModel;
+use std::ffi::c_void;
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
@@ -259,7 +260,12 @@ pub extern "C" fn mmtk_get_malloc_bytes() -> usize {
 }
 
 #[no_mangle]
-pub extern "C" fn mmtk_init_test() {
+pub extern "C" fn convert_opaque_pointer(stack_start: *mut c_void) -> *mut OpaquePointer {
+    stack_start as *mut OpaquePointer
+}
+
+#[no_mangle]
+pub extern "C" fn mmtk_init_test(mutator_thread: OpaquePointer) {
     // We demonstrate the main workflow to initialize MMTk, create mutators and allocate objects.
     println!("creating builder");
     let builder = mmtk_create_builder();
@@ -287,7 +293,7 @@ pub extern "C" fn mmtk_init_test() {
 
     // Create an MMTk mutator
     println!("creating mutator");
-    let tls = VMMutatorThread(VMThread(OpaquePointer::UNINITIALIZED)); // FIXME: Use the actual thread pointer or identifier
+    let tls = VMMutatorThread(VMThread(mutator_thread)); // FIXME: Use the actual thread pointer or identifier
     println!("creating mutator 2");
     let mutator = mmtk_bind_mutator(tls);
     println!("mutator created successfully");
