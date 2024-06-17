@@ -12,7 +12,8 @@ impl ActivePlan<DummyVM> for VMActivePlan {
     }
 
     fn is_mutator(_tls: VMThread) -> bool {
-        unimplemented!()
+        return true;
+//        unimplemented!()
     }
 
     fn mutator(_tls: VMMutatorThread) -> &'static mut Mutator<DummyVM> {

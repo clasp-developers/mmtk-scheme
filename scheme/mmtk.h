@@ -36,7 +36,22 @@ int mmtk_set_option_from_string( void* builder, const char* name, const  char* v
    * @param min minimum heap size
    * @param max maximum heap size
    */
-  void mmtk_set_heap_size(size_t min, size_t max);
+int mmtk_set_fixed_heap_size(void* mutator, size_t size);
 
+void* mmtk_bind_mutator(void* mutator);
+
+void* mmtk_alloc( void* mutator,
+                  size_t size,
+                  size_t align,
+                  size_t offset,
+                  int semantics );
+
+void* mmtk_post_alloc( void* mutator,
+                       void* obj, 
+                       size_t size,
+                       int semantics );
+
+
+void* mmtk_destroy_mutator(void* mutator);
 
 #endif // MMTK_H
