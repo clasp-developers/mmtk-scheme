@@ -270,7 +270,7 @@ pub extern "C" fn convert_opaque_pointer(stack_start: *mut c_void) -> *mut Opaqu
 */
 
 #[no_mangle]
-pub extern "C" fn mmtk_init_test(mutator_thread: OpaquePointer) {
+pub extern "C" fn mmtk_init_test() {
     // We demonstrate the main workflow to initialize MMTk, create mutators and allocate objects.
     println!("creating builder");
     let builder = mmtk_create_builder();
@@ -298,7 +298,7 @@ pub extern "C" fn mmtk_init_test(mutator_thread: OpaquePointer) {
 
     // Create an MMTk mutator
     println!("creating mutator");
-    let tls = VMMutatorThread(VMThread(mutator_thread)); // FIXME: Use the actual thread pointer or identifier
+    let tls = VMMutatorThread(VMThread(OpaquePointer::UNINITIALIZED)); // FIXME: Use the actual thread pointer or identifier
     println!("creating mutator 2");
     let mutator = mmtk_bind_mutator(tls);
     println!("mutator created successfully");
