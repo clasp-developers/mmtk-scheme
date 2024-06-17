@@ -16,6 +16,8 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use mmtk::vm::ObjectModel;
 use std::ffi::c_void;
+use mmtk::util::opaque_pointer::OpaquePointer;
+
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
@@ -259,10 +261,13 @@ pub extern "C" fn mmtk_get_malloc_bytes() -> usize {
     memory_manager::get_malloc_bytes(mmtk())
 }
 
+/*
 #[no_mangle]
 pub extern "C" fn convert_opaque_pointer(stack_start: *mut c_void) -> *mut OpaquePointer {
-    stack_start as *mut OpaquePointer
+    let opaque_pointer = Box::into_raw(Box::new(OpaquePointer(stack_start)));
+    opaque_pointer
 }
+*/
 
 #[no_mangle]
 pub extern "C" fn mmtk_init_test(mutator_thread: OpaquePointer) {
