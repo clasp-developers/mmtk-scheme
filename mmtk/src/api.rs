@@ -15,7 +15,6 @@ use mmtk::Mutator;
 use std::ffi::CStr;
 use std::ffi::CString;
 use mmtk::vm::ObjectModel;
-use std::ffi::c_void;
 use mmtk::util::opaque_pointer::OpaquePointer;
 
 
@@ -261,13 +260,6 @@ pub extern "C" fn mmtk_get_malloc_bytes() -> usize {
     memory_manager::get_malloc_bytes(mmtk())
 }
 
-/*
-#[no_mangle]
-pub extern "C" fn convert_opaque_pointer(stack_start: *mut c_void) -> *mut OpaquePointer {
-    let opaque_pointer = Box::into_raw(Box::new(OpaquePointer(stack_start)));
-    opaque_pointer
-}
-*/
 
 #[no_mangle]
 pub extern "C" fn mmtk_init_test() {

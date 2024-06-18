@@ -54,4 +54,7 @@ void* mmtk_post_alloc( void* mutator,
 
 void* mmtk_destroy_mutator(void* mutator);
 
+void mmtk_handle_user_collection_request(void* tls);
+void mmtk_initialize_collection(void* tls);
+
 #endif // MMTK_H
