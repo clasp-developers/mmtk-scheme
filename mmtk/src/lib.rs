@@ -10,6 +10,9 @@ use std::sync::atomic::AtomicBool;
 use mmtk::vm::VMBinding;
 use mmtk::MMTK;
 
+#[derive(Default)]
+pub struct Scheme;
+
 pub mod active_plan;
 pub mod api;
 pub mod collection;
@@ -43,6 +46,6 @@ pub static MMTK_INITIALIZED: AtomicBool = AtomicBool::new(false);
 pub static SINGLETON: OnceLock<Box<MMTK<DummyVM>>> = OnceLock::new();
 
 //access singleton
-fn mmtk() -> &'static MMTK<DummyVM> {
+pub fn mmtk() -> &'static MMTK<DummyVM> {
    SINGLETON.get().unwrap() 
 }

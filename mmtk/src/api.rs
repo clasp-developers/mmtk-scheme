@@ -55,7 +55,8 @@ pub extern "C" fn mmtk_init(raw_builder: *mut MMTKBuilder) {
 
     // Create MMTK instance.
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
-
+    //pub let the_mmtk = mmtk();
+    
     // Set SINGLETON to the instance.
     SINGLETON.set(mmtk).unwrap_or_else(|_| {
         panic!("Failed to set SINGLETON");
