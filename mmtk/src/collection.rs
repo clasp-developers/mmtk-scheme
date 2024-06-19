@@ -1,6 +1,6 @@
 use crate::DummyVM;
-use crate::SINGLETON;
-use crate::the_mmtk; // Added to support spawn_gc_thread
+use crate::mmtk;
+//use crate::the_mmtk; // Added to support spawn_gc_thread
 use mmtk::util::opaque_pointer::*;
 use mmtk::vm::Collection;
 use mmtk::vm::GCThreadContext;
@@ -42,7 +42,7 @@ impl Collection<DummyVM> for VMCollection {
             })));
             match ctx {
                 GCThreadContext::Worker(w) => {
-                    mmtk::memory_manager::start_worker(&the_mmtk, worker_tls, w)
+                    mmtk::memory_manager::start_worker(mmtk(), worker_tls, w)
                 }
             }
         });

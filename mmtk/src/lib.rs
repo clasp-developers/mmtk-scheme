@@ -46,6 +46,6 @@ pub static MMTK_INITIALIZED: AtomicBool = AtomicBool::new(false);
 pub static SINGLETON: OnceLock<Box<MMTK<DummyVM>>> = OnceLock::new();
 
 //access singleton
-fn mmtk() -> &'static MMTK<DummyVM> {
+pub fn mmtk() -> &'static MMTK<DummyVM> {
    SINGLETON.get().unwrap() 
 }
