@@ -1,4 +1,6 @@
 use crate::DummyVM;
+use crate::SINGLETON;
+use crate::the_mmtk; // Added to support spawn_gc_thread
 use mmtk::util::opaque_pointer::*;
 use mmtk::vm::Collection;
 use mmtk::vm::GCThreadContext;
@@ -30,7 +32,19 @@ impl Collection<DummyVM> for VMCollection {
         //unimplemented!()
     }
 
-    fn spawn_gc_thread(_tls: VMThread, _ctx: GCThreadContext<DummyVM>) {
-       //unimplemented!()
+    fn spawn_gc_thread(_tls: VMThread, ctx: GCThreadContext<DummyVM>) {
+        // Just drop the join handle. The thread will run until the process quits.
+        let _ = std::thread::spawn(move || {
+            use mmtk::util::opaque_pointer::*;
+            use mmtk::util::Address;
+            let worker_tls = VMWorkerThread(VMThread(OpaquePointer::from_address(unsafe {
+                Address::from_usize(thread_id::get())
+            })));
+            match ctx {
+                GCThreadContext::Worker(w) => {
+                    mmtk::memory_manager::start_worker(&the_mmtk, worker_tls, w)
+                }
+            }
+        });
     }
 }

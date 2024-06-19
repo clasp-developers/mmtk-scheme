@@ -10,6 +10,9 @@ use std::sync::atomic::AtomicBool;
 use mmtk::vm::VMBinding;
 use mmtk::MMTK;
 
+#[derive(Default)]
+pub struct Scheme;
+
 pub mod active_plan;
 pub mod api;
 pub mod collection;
