@@ -2,7 +2,6 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 use crate::mmtk;
-//use crate::the_mmtk;
 use crate::DummyVM;
 use crate::SINGLETON;
 use libc::c_char;
