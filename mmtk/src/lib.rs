@@ -1,5 +1,3 @@
-//theirs lowkey
-
 extern crate libc; 
 extern crate mmtk;
 extern crate lazy_static;
@@ -16,6 +14,8 @@ pub mod collection;
 pub mod object_model;
 pub mod reference_glue;
 pub mod scanning;
+
+use std::ptr::null_mut;
 
 mod slots;
 
@@ -46,3 +46,12 @@ pub static SINGLETON: OnceLock<Box<MMTK<DummyVM>>> = OnceLock::new();
 fn mmtk() -> &'static MMTK<DummyVM> {
    SINGLETON.get().unwrap() 
 }
+
+//upcalls
+#[repr(C)]
+//FIXME: replace REPLACEME with what we're porting to (clasp?scheme?idk)
+pub struct REPLACEME_Upcalls {
+    //a bunch of functions to go in here
+}
+
+pub static mut UPCALLS: *const REPLACEME_Upcalls = null_mut();
