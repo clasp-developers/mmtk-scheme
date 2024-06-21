@@ -12,7 +12,7 @@
 
 void mmtk_c_test();
 
-
+int mmtk_is_mmtk_object(void* addr);
 
 // An arbitrary address
   typedef void* Address;
@@ -58,6 +58,6 @@ void mmtk_handle_user_collection_request(void* tls);
 void mmtk_initialize_collection(void* tls);
 
 //upcalls
-typedef struct {} REPLACEME_Upcalls;
+typedef struct {} scheme_Upcalls;
 
 #endif // MMTK_H

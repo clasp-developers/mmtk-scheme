@@ -21,6 +21,7 @@ use mmtk::util::opaque_pointer::OpaquePointer;
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
 
+
 #[no_mangle]
 pub extern "C" fn mmtk_create_builder() -> *mut MMTKBuilder {
     Box::into_raw(Box::new(mmtk::MMTKBuilder::new()))
@@ -154,7 +155,7 @@ pub extern "C" fn mmtk_will_never_move(object: ObjectReference) -> bool {
     !object.is_movable::<DummyVM>()
 }
 
-#[cfg(feature = "is_mmtk_object")]
+//#[cfg(feature = "is_mmtk_object")]
 #[no_mangle]
 pub extern "C" fn mmtk_is_mmtk_object(addr: Address) -> bool {
     memory_manager::is_mmtk_object(addr)

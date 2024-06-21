@@ -49,9 +49,8 @@ fn mmtk() -> &'static MMTK<DummyVM> {
 
 //upcalls
 #[repr(C)]
-//FIXME: replace REPLACEME with what we're porting to (clasp?scheme?idk)
-pub struct REPLACEME_Upcalls {
+pub struct scheme_Upcalls {
     //a bunch of functions to go in here
 }
 
-pub static mut UPCALLS: *const REPLACEME_Upcalls = null_mut();
+pub static mut UPCALLS: *const scheme_Upcalls = null_mut();
