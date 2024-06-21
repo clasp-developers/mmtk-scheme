@@ -17,8 +17,7 @@ impl ObjectModel<DummyVM> for VMObjectModel {
 
     const GLOBAL_LOG_BIT_SPEC: VMGlobalLogBitSpec = VMGlobalLogBitSpec::in_header(0);
 
-    const LOCAL_PINNING_BIT_SPEC: VMLocalPinningBitSpec =
-        VMLocalPinningBitSpec::side_after(Self::LOCAL_MARK_BIT_SPEC.as_spec());
+    const LOCAL_PINNING_BIT_SPEC: VMLocalPinningBitSpec = VMLocalPinningBitSpec::in_header(0);
 
     // Local metadata
 

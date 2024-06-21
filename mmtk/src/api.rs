@@ -14,8 +14,10 @@ use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
 use std::ffi::CString;
+use std::mem::size_of;
 use mmtk::vm::ObjectModel;
 use mmtk::util::opaque_pointer::OpaquePointer;
+use object_model::OBJECT_REF_OFFSET;
 
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
@@ -317,6 +319,55 @@ pub extern "C" fn mmtk_init_test() {
     println!("destroying mutator");
     mmtk_destroy_mutator(mutator);
     println!("mutator destroyed successfully");
+}
+
+//define simple round_down function for the find_pointer function
+fn round_down(value: usize, align: usize) -> usize {
+    value & !(align - 1)
+}
+
+//try_pointer function written by Adel Prokurov
+//source: https://mmtk.zulipchat.com/#narrow/stream/262679-General/topic/.E2.9C.94.20Finding.20object.20start.20using.20VO.20bits/near/402951366
+
+/// Checks if `pointer` is a valid object in MMTk heap.
+///
+/// `pointer` can be an interior pointer in which case we search for first vo_bit set to `1`
+/// and return object that corresponds to that bit.
+///
+/// Return value is `pointer + OBJECT_REF_OFFSET` because `vo_bit` is set for `alloc()` result
+/// while our actual object references start at `alloc() + OBJECT_REF_OFFSET`.
+#[no_mangle]
+pub unsafe extern "C" fn try_pointer(pointer: usize, vo_bits: usize) -> usize {
+    /// Limit of interior pointer offsets
+    ///
+    /// This is the maximum offset before we stop search for object start.
+    const INTERIOR_LIMIT: usize = 512;
+    let mut obj = round_down(pointer, size_of::<usize>() as _);
+    let mut bits_since_start = obj / (size_of::<usize>() * 8);
+    let mut vo_bit_byte_addr = vo_bits + bits_since_start / 8;
+    let mut vo_bit_in_byte_shift = bits_since_start % 8;
+    let mut covered = 0;
+    let mut byte_val = (vo_bit_byte_addr as *const u8).read();
+
+    while (byte_val >> vo_bit_in_byte_shift) & 1 == 0 {
+        obj -= size_of::<usize>();
+        covered += 8;
+        bits_since_start = obj / (size_of::<usize>() * 8);
+        vo_bit_byte_addr = vo_bits.wrapping_add(bits_since_start / 8);
+        vo_bit_in_byte_shift = bits_since_start % 8;
+
+        if vo_bit_byte_addr < vo_bits || covered > INTERIOR_LIMIT {
+            return usize::MAX; //og return None;
+        }
+
+        byte_val = (vo_bit_byte_addr as *const u8).read();
+    }
+
+    if (byte_val >> vo_bit_in_byte_shift) & 1 == 0 {
+        usize::MAX //originally: None
+    } else {
+        obj + OBJECT_REF_OFFSET as usize //og Some(obj + ..)
+    }
 }
 
 /*
