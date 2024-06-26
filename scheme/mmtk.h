@@ -28,7 +28,7 @@ int mmtk_set_option_from_string( void* builder, const char* name, const  char* v
   /**
    * Initialize MMTk instance
    */
-  void mmtk_init();
+void mmtk_init(void* builder, void* rtupcalls);
 
   /**
    * Set the heap size
@@ -56,6 +56,13 @@ void* mmtk_destroy_mutator(void* mutator);
 
 void mmtk_handle_user_collection_request(void* tls);
 void mmtk_initialize_collection(void* tls);
+
+//
+// Print info on mmtk
+//
+void mmtk_info();
+
+void mmtk_scan_stack(void** bottom, void** top);
 
 //upcalls
 typedef struct {} scheme_Upcalls;

@@ -7,6 +7,7 @@ use std::sync::atomic::AtomicBool;
 
 use mmtk::vm::VMBinding;
 use mmtk::MMTK;
+use mmtk::Mutator;
 
 pub mod active_plan;
 pub mod api;
@@ -51,6 +52,7 @@ fn mmtk() -> &'static MMTK<DummyVM> {
 #[repr(C)]
 pub struct scheme_Upcalls {
     //a bunch of functions to go in here
+    pub mutator_stack_top: extern "C" fn(*mut Mutator<DummyVM>) -> usize,
 }
 
 pub static mut UPCALLS: *const scheme_Upcalls = null_mut();

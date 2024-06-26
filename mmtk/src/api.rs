@@ -4,6 +4,9 @@
 use crate::mmtk;
 use crate::DummyVM;
 use crate::SINGLETON;
+use scheme_Upcalls;
+use UPCALLS;
+
 use libc::c_char;
 use mmtk::memory_manager;
 use mmtk::scheduler::GCWorker;
@@ -13,11 +16,10 @@ use mmtk::AllocationSemantics;
 use mmtk::MMTKBuilder;
 use mmtk::Mutator;
 use std::ffi::CStr;
-use std::ffi::CString;
-use std::mem::size_of;
-use mmtk::vm::ObjectModel;
-use mmtk::util::opaque_pointer::OpaquePointer;
-use object_model::OBJECT_REF_OFFSET;
+use mmtk::util::metadata::side_metadata::VO_BIT_SIDE_METADATA_ADDR;
+use mmtk::util::is_mmtk_object::VO_BIT_REGION_SIZE;
+//use std::ffi::CString;
+//use mmtk::vm::ObjectModel;
 
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
@@ -53,8 +55,9 @@ pub extern "C" fn mmtk_set_fixed_heap_size(builder: *mut MMTKBuilder, heap_size:
 }
 
 #[no_mangle]
-pub extern "C" fn mmtk_init(raw_builder: *mut MMTKBuilder) {
+pub extern "C" fn mmtk_init(raw_builder: *mut MMTKBuilder, upcalls: *const scheme_Upcalls) {
     let builder = unsafe { Box::from_raw(raw_builder) };
+    unsafe { UPCALLS = upcalls; }
 
     // Create MMTK instance.
     let mmtk = memory_manager::mmtk_init::<DummyVM>(&builder);
@@ -264,6 +267,7 @@ pub extern "C" fn mmtk_get_malloc_bytes() -> usize {
 }
 
 
+/*
 #[no_mangle]
 pub extern "C" fn mmtk_init_test() {
     // We demonstrate the main workflow to initialize MMTk, create mutators and allocate objects.
@@ -320,55 +324,29 @@ pub extern "C" fn mmtk_init_test() {
     mmtk_destroy_mutator(mutator);
     println!("mutator destroyed successfully");
 }
+*/
 
-//define simple round_down function for the find_pointer function
-fn round_down(value: usize, align: usize) -> usize {
-    value & !(align - 1)
-}
 
-//try_pointer function written by Adel Prokurov
-//source: https://mmtk.zulipchat.com/#narrow/stream/262679-General/topic/.E2.9C.94.20Finding.20object.20start.20using.20VO.20bits/near/402951366
-
-/// Checks if `pointer` is a valid object in MMTk heap.
-///
-/// `pointer` can be an interior pointer in which case we search for first vo_bit set to `1`
-/// and return object that corresponds to that bit.
-///
-/// Return value is `pointer + OBJECT_REF_OFFSET` because `vo_bit` is set for `alloc()` result
-/// while our actual object references start at `alloc() + OBJECT_REF_OFFSET`.
 #[no_mangle]
-pub unsafe extern "C" fn try_pointer(pointer: usize, vo_bits: usize) -> usize {
-    /// Limit of interior pointer offsets
-    ///
-    /// This is the maximum offset before we stop search for object start.
-    const INTERIOR_LIMIT: usize = 512;
-    let mut obj = round_down(pointer, size_of::<usize>() as _);
-    let mut bits_since_start = obj / (size_of::<usize>() * 8);
-    let mut vo_bit_byte_addr = vo_bits + bits_since_start / 8;
-    let mut vo_bit_in_byte_shift = bits_since_start % 8;
-    let mut covered = 0;
-    let mut byte_val = (vo_bit_byte_addr as *const u8).read();
-
-    while (byte_val >> vo_bit_in_byte_shift) & 1 == 0 {
-        obj -= size_of::<usize>();
-        covered += 8;
-        bits_since_start = obj / (size_of::<usize>() * 8);
-        vo_bit_byte_addr = vo_bits.wrapping_add(bits_since_start / 8);
-        vo_bit_in_byte_shift = bits_since_start % 8;
-
-        if vo_bit_byte_addr < vo_bits || covered > INTERIOR_LIMIT {
-            return usize::MAX; //og return None;
-        }
-
-        byte_val = (vo_bit_byte_addr as *const u8).read();
-    }
-
-    if (byte_val >> vo_bit_in_byte_shift) & 1 == 0 {
-        usize::MAX //originally: None
-    } else {
-        obj + OBJECT_REF_OFFSET as usize //og Some(obj + ..)
-    }
+pub extern "C" fn mmtk_info() {
+    println!("Print mmtk_info()");
+    let heap_base = mmtk::memory_manager::starting_heap_address().as_usize();
+    let heap_end = mmtk::memory_manager::last_heap_address().as_usize();
+    println!("mmtk::memory_manager::starting_heap_address() = {:#x}", heap_base );
+    println!("    mmtk::memory_manager::last_heap_address() = {:#x}", heap_end );
+    let vo_bits = VO_BIT_SIDE_METADATA_ADDR.as_usize();
+    println!("                    VO_BIT_SIDE_METADATA_ADDR = {:#x}", vo_bits );
+    let vo_bit_region_size = VO_BIT_REGION_SIZE;
+    println!("                           VO_BIT_REGION_SIZE = {}", vo_bit_region_size );
 }
+
+
+#[no_mangle]
+pub extern "C" fn mmtk_scan_stack(stack_bottom: *mut *mut u8, stack_top: *mut *mut u8) {
+    println!("In mmtk_scan_stack");
+    unsafe { crate::scanning::process_stack(stack_bottom, stack_top); }
+}
+
 
 /*
 #[cfg(test)]
