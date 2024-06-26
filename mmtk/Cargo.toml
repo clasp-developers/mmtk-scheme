@@ -13,8 +13,8 @@ thread-id = "*"
 
 [dependencies.mmtk]
 features = ["is_mmtk_object", "object_pinning", "immix_non_moving", "immix_zero_on_release"] 
-git = "https://github.com/mmtk/mmtk-core"
-branch = "master"
+git = "https://github.com/qinsoon/mmtk-core"
+branch = "feature/find-object-from-internal-pointer"
 
 [lib]
 name = "mmtkscheme"
