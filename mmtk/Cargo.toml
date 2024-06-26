@@ -9,9 +9,10 @@ lazy_static = { version = "1.1.0" }
 log = { version = "0.4", features = ["max_level_trace", "release_max_level_off"] }
 libc = "0.2"
 atomic = "0.6"
+thread-id = "*"
 
 [dependencies.mmtk]
-features = ["is_mmtk_object", "object_pinning", "sticky_immix_non_moving_nursery"] 
+features = ["is_mmtk_object", "object_pinning", "immix_non_moving", "immix_zero_on_release"] 
 git = "https://github.com/mmtk/mmtk-core"
 branch = "master"
 
