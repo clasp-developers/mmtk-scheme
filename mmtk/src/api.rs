@@ -166,6 +166,13 @@ pub extern "C" fn mmtk_is_mmtk_object(addr: Address) -> bool {
     memory_manager::is_mmtk_object(addr)
 }
 
+/*
+#[no_mangle]
+pub extern "C" fn mmtk_find_object_from_internal_pointer<DummyVM>(internal_ptr: Address, max_search_bytes: usize) -> Option<(Address, Address)> {
+    memory_manager::find_object_from_internal_pointer::<DummyVM>(internal_ptr, max_search_bytes)
+}
+*/
+
 #[no_mangle]
 pub extern "C" fn mmtk_is_in_mmtk_spaces(object: ObjectReference) -> bool {
     memory_manager::is_in_mmtk_spaces::<DummyVM>(object)
