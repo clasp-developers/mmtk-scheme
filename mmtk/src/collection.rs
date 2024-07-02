@@ -29,7 +29,8 @@ impl Collection<DummyVM> for VMCollection {
     /// Arguments:
     /// * `tls`: The current thread pointer that should be blocked. The VM can optionally check if the current thread matches `tls`.
     fn block_for_gc(_tls: VMMutatorThread) {
-        unimplemented!()
+        println!("block_for_gc: implement me fully");
+        //unimplemented!()
     }
 
     fn spawn_gc_thread(_tls: VMThread, ctx: GCThreadContext<DummyVM>) {

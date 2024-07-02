@@ -1,6 +1,8 @@
 //scanning.rs wip
 use crate::slots::DummyVMSlot;
 use crate::DummyVM;
+use UPCALLS;
+
 use std::io;
 use std::io::Write;
 use mmtk::util::opaque_pointer::*;
@@ -26,7 +28,15 @@ impl Scanning<DummyVM> for VMScanning {
         _mutator: &'static mut Mutator<DummyVM>,
         _factory: impl RootsWorkFactory<DummyVMSlot>,
     ) {
-        println!("In scan_roots_in_mutator_thread");
+        let value: usize = 42; // Declare a usize value on the stack
+        let stack_top: *const usize = unsafe { ((*UPCALLS).mutator_stack_top)(_mutator) };
+        let stack_bottom: *const usize = &value; // Take its address
+
+        // Print the value and its address
+        println!("In scan_roots_in_mutator_thread -----------------------------------");
+        println!("   Stack top: {:p}", stack_top);
+        println!("Stack bottom: {:p}", stack_bottom);
+
         unimplemented!()
     }
     fn scan_vm_specific_roots(_tls: VMWorkerThread, _factory: impl RootsWorkFactory<DummyVMSlot>) {
