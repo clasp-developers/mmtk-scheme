@@ -484,6 +484,7 @@ dependencies = [
  "libc",
  "log",
  "mmtk",
+ "thread-id",
 ]
 
 [[package]]
@@ -730,6 +731,16 @@ dependencies = [
  "once_cell",
  "rayon",
  "windows",
+]
+
+[[package]]
+name = "thread-id"
+version = "4.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0ec81c46e9eb50deaa257be2f148adf052d1fb7701cfd55ccfab2525280b70b"
+dependencies = [
+ "libc",
+ "winapi",
 ]
 
 [[package]]
