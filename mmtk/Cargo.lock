@@ -432,7 +432,7 @@ dependencies = [
 [[package]]
 name = "mmtk"
 version = "0.25.0"
-source = "git+https://github.com/mmtk/mmtk-core?branch=master#170630fc84bc82070ca6e06ea4fed76894aa703f"
+source = "git+https://github.com/qinsoon/mmtk-core?branch=feature/find-object-from-internal-pointer#b0b08f49fce1015a83ac0169b532cf185bebc482"
 dependencies = [
  "atomic",
  "atomic-traits",
@@ -467,7 +467,7 @@ dependencies = [
 [[package]]
 name = "mmtk-macros"
 version = "0.25.0"
-source = "git+https://github.com/mmtk/mmtk-core?branch=master#170630fc84bc82070ca6e06ea4fed76894aa703f"
+source = "git+https://github.com/qinsoon/mmtk-core?branch=feature/find-object-from-internal-pointer#b0b08f49fce1015a83ac0169b532cf185bebc482"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
