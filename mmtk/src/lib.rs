@@ -5,9 +5,10 @@ extern crate lazy_static;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 
+use mmtk::util::opaque_pointer::*;
+use mmtk::Mutator;
 use mmtk::vm::VMBinding;
 use mmtk::MMTK;
-use mmtk::Mutator;
 
 pub mod active_plan;
 pub mod api;
@@ -53,6 +54,7 @@ fn mmtk() -> &'static MMTK<DummyVM> {
 pub struct scheme_Upcalls {
     //a bunch of functions to go in here
     pub mutator_stack_top: extern "C" fn(*mut Mutator<DummyVM>) -> *const usize,
+    pub block_for_gc: extern "C" fn(VMMutatorThread),
 }
 
 pub static mut UPCALLS: *const scheme_Upcalls = null_mut();

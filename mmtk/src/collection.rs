@@ -4,6 +4,8 @@ use mmtk::vm::Collection;
 use mmtk::vm::GCThreadContext;
 use mmtk::Mutator;
 use SINGLETON;
+use UPCALLS;
+
 //use std::thread;
 
 pub struct VMCollection {}
@@ -30,7 +32,7 @@ impl Collection<DummyVM> for VMCollection {
     /// * `tls`: The current thread pointer that should be blocked. The VM can optionally check if the current thread matches `tls`.
     fn block_for_gc(_tls: VMMutatorThread) {
         println!("block_for_gc: implement me fully");
-        //unimplemented!()
+        unsafe { ((*UPCALLS).block_for_gc)(_tls) };
     }
 
     fn spawn_gc_thread(_tls: VMThread, ctx: GCThreadContext<DummyVM>) {
