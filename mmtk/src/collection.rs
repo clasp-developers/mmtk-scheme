@@ -17,7 +17,12 @@ impl Collection<DummyVM> for VMCollection {
     where
         F: FnMut(&'static mut Mutator<DummyVM>),
     {
-        unimplemented!()
+        //unimplemented!()
+	let (lock, condition) = &*MUTATOR_STATUS;
+	let mut state = lock.lock.unwrap();
+	state.is_running = false; //stop the mutator
+	println!("stop_all_mutators: block mutator thread");
+	condition.notify_all();
     }
 
     fn resume_mutators(_tls: VMWorkerThread) {
@@ -36,7 +41,13 @@ impl Collection<DummyVM> for VMCollection {
     /// Arguments:
     /// * `tls`: The current thread pointer that should be blocked. The VM can optionally check if the current thread matches `tls`.
     fn block_for_gc(_tls: VMMutatorThread) {
-        println!("block_for_gc: implement me fully");
+        println!("block_for_gc: starting");
+	let (lock, condition) = &*MUTATOR_STATUS;
+	let mut state = lock.lock.unwrap();
+	while !state.is_running{
+	      state = condition.wait(state).unwrap();
+	}
+	println!("block_for_gc: mutator resumed");
         unsafe { ((*UPCALLS).block_for_gc)(_tls) };
     }
 
