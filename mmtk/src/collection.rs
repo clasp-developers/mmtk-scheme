@@ -19,9 +19,13 @@ impl Collection<DummyVM> for VMCollection {
     {
         //unimplemented!()
 	let (lock, condition) = &*MUTATOR_STATUS;
-	let mut state = lock.lock.unwrap();
+	let mut state = lock.lock().unwrap();
 	state.is_running = false; //stop the mutator
-	println!("stop_all_mutators: block mutator thread");
+	if !state.is_running{
+	   println!("stop_all_mutators: success blocked mutator thread");
+	} else {
+	   println!("stop_all_mutators: fail");
+	}
 	condition.notify_all();
     }
 
@@ -29,8 +33,12 @@ impl Collection<DummyVM> for VMCollection {
         let (lock, condition) = &*MUTATOR_STATUS; //get mutex & condition variable
 	let mut state = lock.lock().unwrap();
 	state.is_running = true; //update to resume mutator thread
+	if state.is_running{
+	   println!("resume_mutators: success resumed mutator thread");
+	} else {
+	   println!("resume_mutators: fail");
+	}
 	condition.notify_all();
-        //unimplemented!()
     }
 
     /// Block the current thread for GC. This is called when an allocation request cannot be fulfilled and a GC
@@ -43,7 +51,7 @@ impl Collection<DummyVM> for VMCollection {
     fn block_for_gc(_tls: VMMutatorThread) {
         println!("block_for_gc: starting");
 	let (lock, condition) = &*MUTATOR_STATUS;
-	let mut state = lock.lock.unwrap();
+	let mut state = lock.lock().unwrap();
 	while !state.is_running{
 	      state = condition.wait(state).unwrap();
 	}
