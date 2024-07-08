@@ -18,9 +18,6 @@ use mmtk::Mutator;
 use std::ffi::CStr;
 use mmtk::util::metadata::side_metadata::VO_BIT_SIDE_METADATA_ADDR;
 use mmtk::util::is_mmtk_object::VO_BIT_REGION_SIZE;
-//use std::ffi::CString;
-//use mmtk::vm::ObjectModel;
-
 
 // This file exposes MMTk Rust API to the native code. This is not an exhaustive list of all the APIs.
 // Most commonly used APIs are listed in https://docs.mmtk.io/api/mmtk/memory_manager/index.html. The binding can expose them here.
