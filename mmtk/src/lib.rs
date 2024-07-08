@@ -1,8 +1,9 @@
 extern crate libc; 
 extern crate mmtk;
 extern crate lazy_static;
+use lazy_static::lazy_static;
 
-use std::sync::OnceLock;
+use std::sync::{OnceLock, Condvar, Mutex};
 use std::sync::atomic::AtomicBool;
 
 use mmtk::util::opaque_pointer::*;
@@ -58,3 +59,14 @@ pub struct scheme_Upcalls {
 }
 
 pub static mut UPCALLS: *const scheme_Upcalls = null_mut();
+
+struct MutatorStatus {
+    is_running: bool,
+}
+
+lazy_static!{
+    static ref MUTATOR_STATUS: (Mutex<MutatorStatus>, Condvar) = (
+    	Mutex::new(MutatorStatus {is_running : true}),
+	Condvar::new()
+    );
+}
