@@ -5,6 +5,7 @@ use mmtk::vm::GCThreadContext;
 use mmtk::Mutator;
 use SINGLETON;
 use UPCALLS;
+use MUTATOR_STATUS;
 
 //use std::thread;
 
@@ -20,7 +21,11 @@ impl Collection<DummyVM> for VMCollection {
     }
 
     fn resume_mutators(_tls: VMWorkerThread) {
-        unimplemented!()
+        let (lock, condition) = &*MUTATOR_STATUS; //get mutex & condition variable
+	let mut state = lock.lock().unwrap();
+	state.is_running = true; //update to resume mutator thread
+	condition.notify_all();
+        //unimplemented!()
     }
 
     /// Block the current thread for GC. This is called when an allocation request cannot be fulfilled and a GC
