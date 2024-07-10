@@ -13,7 +13,7 @@ pub struct VMCollection {}
 
 // Documentation: https://docs.mmtk.io/api/mmtk/vm/collection/trait.Collection.html
 impl Collection<DummyVM> for VMCollection {
-    fn stop_all_mutators<F>(_tls: VMWorkerThread, mut mutator_visitor: F)
+    fn stop_all_mutators<F>(_tls: VMWorkerThread, _mutator_visitor: F)
     where
         F: FnMut(&'static mut Mutator<DummyVM>),
     {
@@ -56,7 +56,7 @@ impl Collection<DummyVM> for VMCollection {
 	      state = condition.wait(state).unwrap();
 	}
 	println!("block_for_gc: mutator resumed");
-        unsafe { ((*UPCALLS).block_for_gc)(_tls) };
+        //unsafe { ((*UPCALLS).block_for_gc)(_tls) };
     }
 
     fn spawn_gc_thread(_tls: VMThread, ctx: GCThreadContext<DummyVM>) {

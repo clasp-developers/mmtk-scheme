@@ -62,6 +62,7 @@ pub struct scheme_Upcalls {
         visit_mutator: extern "C" fn(*mut Mutator<DummyVM>, *mut libc::c_void),
         data: *mut libc::c_void,
     ),
+    pub scan_vm_specific_roots: extern "C" fn(VMWorkerThread),
 }
 
 pub static mut UPCALLS: *const scheme_Upcalls = null_mut();
