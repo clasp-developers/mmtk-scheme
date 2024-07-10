@@ -40,6 +40,7 @@ impl Scanning<DummyVM> for VMScanning {
         unimplemented!()
     }
     fn scan_vm_specific_roots(_tls: VMWorkerThread, _factory: impl RootsWorkFactory<DummyVMSlot>) {
+        println!("scan_vm_specific_roots");
         unimplemented!()
     }
     fn scan_object<EV: SlotVisitor<DummyVMSlot>>(
@@ -47,15 +48,19 @@ impl Scanning<DummyVM> for VMScanning {
         _object: ObjectReference,
         _slot_visitor: &mut EV,
     ) {
+        println!("scan_object");
         unimplemented!()
     }
     fn notify_initial_thread_scan_complete(_partial_scan: bool, _tls: VMWorkerThread) {
+        println!("notify_initial_thread_scan_complete");
         unimplemented!()
     }
     fn supports_return_barrier() -> bool {
+        println!("supports_return_barrier");
         unimplemented!()
     }
     fn prepare_for_roots_re_scanning() {
+        println!("prepare_for_roots_re_scanning");
         unimplemented!()
     }
 }

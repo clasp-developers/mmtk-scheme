@@ -13,7 +13,7 @@ pub struct VMCollection {}
 
 // Documentation: https://docs.mmtk.io/api/mmtk/vm/collection/trait.Collection.html
 impl Collection<DummyVM> for VMCollection {
-    fn stop_all_mutators<F>(_tls: VMWorkerThread, _mutator_visitor: F)
+    fn stop_all_mutators<F>(_tls: VMWorkerThread, mut mutator_visitor: F)
     where
         F: FnMut(&'static mut Mutator<DummyVM>),
     {
@@ -74,5 +74,16 @@ impl Collection<DummyVM> for VMCollection {
                 }
             }
     });
+    }
+}
+
+impl VMCollection {
+    extern "C" fn notify_mutator_ready<F>(mutator_ptr: *mut Mutator<DummyVM>, data: *mut libc::c_void)
+    where
+        F: FnMut(&'static mut mmtk::Mutator<DummyVM>),
+    {
+        let mutator = unsafe { &mut *mutator_ptr };
+        let mutator_visitor = unsafe { &mut *(data as *mut F) };
+        mutator_visitor(mutator);
     }
 }
