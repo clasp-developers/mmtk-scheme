@@ -57,6 +57,14 @@ void* mmtk_destroy_mutator(void* mutator);
 void mmtk_handle_user_collection_request(void* tls);
 void mmtk_initialize_collection(void* tls);
 
+void mmtk_scan_vm_specific_roots(void *workerThread, void* factory);
+
+int mmtk_num_entries_in_sptab();
+int mmtk_num_entries_in_isymtab();
+void* mmtk_first_in_sptab();
+void* mmtk_first_in_isymtab();
+
+
 //
 // Print info on mmtk
 //
