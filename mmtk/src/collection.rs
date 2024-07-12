@@ -4,7 +4,7 @@ use mmtk::vm::Collection;
 use mmtk::vm::GCThreadContext;
 use mmtk::Mutator;
 use SINGLETON;
-use UPCALLS;
+//use UPCALLS;
 use MUTATOR_STATUS;
 
 //use std::thread;

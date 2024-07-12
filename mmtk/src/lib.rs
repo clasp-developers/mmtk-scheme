@@ -3,6 +3,8 @@ extern crate mmtk;
 extern crate lazy_static;
 use lazy_static::lazy_static;
 
+use libc::{c_char, c_void};
+
 use std::sync::{OnceLock, Condvar, Mutex};
 use std::sync::atomic::AtomicBool;
 
@@ -50,6 +52,13 @@ fn mmtk() -> &'static MMTK<DummyVM> {
    SINGLETON.get().unwrap() 
 }
 
+#[repr(C)]
+pub struct MyStruct {
+    c_string: *const c_char,
+    void_ptr: *mut c_void,
+}
+
+
 //upcalls
 #[repr(C)]
 pub struct scheme_Upcalls {
@@ -63,6 +72,11 @@ pub struct scheme_Upcalls {
         data: *mut libc::c_void,
     ),
     pub scan_vm_specific_roots: extern "C" fn(VMWorkerThread),
+    pub num_entries_in_sptab: extern "C" fn() -> i32,
+    pub num_entries_in_isymtab: extern "C" fn() -> i32,
+    pub first_in_sptab: extern "C" fn() -> *mut MyStruct,
+    pub first_in_isymtab: extern "C" fn() -> *mut MyStruct,
+    
 }
 
 pub static mut UPCALLS: *const scheme_Upcalls = null_mut();

@@ -2,6 +2,7 @@
 use crate::slots::DummyVMSlot;
 use crate::DummyVM;
 use UPCALLS;
+use MyStruct;
 
 use std::io;
 use std::io::Write;
@@ -41,6 +42,13 @@ impl Scanning<DummyVM> for VMScanning {
     }
     fn scan_vm_specific_roots(_tls: VMWorkerThread, _factory: impl RootsWorkFactory<DummyVMSlot>) {
         println!("scan_vm_specific_roots");
+        let num_entries_in_sptab : i32 = unsafe { ((*UPCALLS).num_entries_in_sptab)() };
+        let num_entries_in_isymtab : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)() };
+        let first_in_sptab : *mut MyStruct = unsafe { ((*UPCALLS).first_in_sptab)()};
+        let first_in_isymtab: *mut MyStruct = unsafe { ((*UPCALLS).first_in_isymtab)()};
+        // Write a for loop walking a pointer from first_in_sptab for num_entries_in_sptab and put the second slot in a vec
+
+
         unimplemented!()
     }
     fn scan_object<EV: SlotVisitor<DummyVMSlot>>(
@@ -126,7 +134,7 @@ unsafe fn try_stack_word(
 ) {
     if base <= addr && addr < end {
         if let Some(addr) = try_pointer( base, addr, vo_bits ) {
-            let obj = ObjectReference::from_raw_address(Address::from_usize(addr));
+            // let obj = ObjectReference::from_raw_address(Address::from_usize(addr));
             //            roots.push(obj);
             println!("Stack pointer at {:#x} -> {:#x}", cursor as usize, addr );
         }
