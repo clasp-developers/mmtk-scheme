@@ -42,11 +42,13 @@ impl Scanning<DummyVM> for VMScanning {
     }
     fn scan_vm_specific_roots(_tls: VMWorkerThread, _factory: impl RootsWorkFactory<DummyVMSlot>) {
         println!("scan_vm_specific_roots");
-        let num_entries_in_sptab : i32 = unsafe { ((*UPCALLS).num_entries_in_sptab)() };
-        let num_entries_in_isymtab : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)() };
+        let mad : i32 = unsafe { ((*UPCALLS).num_entries_in_sptab)() };
+        let entries_in_isymtab : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)() };
         let first_in_sptab : *mut MyStruct = unsafe { ((*UPCALLS).first_in_sptab)()};
         let first_in_isymtab: *mut MyStruct = unsafe { ((*UPCALLS).first_in_isymtab)()};
         // Write a for loop walking a pointer from first_in_sptab for num_entries_in_sptab and put the second slot in a vec
+	println!("sptab entries: {}", mad);
+	println!("isymtab entries: {}", entries_in_isymtab);
 
 
         unimplemented!()
