@@ -64,7 +64,6 @@ pub struct MyStruct {
 pub struct scheme_Upcalls {
     //a bunch of functions to go in here
     pub mutator_stack_top: extern "C" fn(*mut Mutator<DummyVM>) -> *const usize,
-    pub block_for_gc: extern "C" fn(VMMutatorThread),
     pub stop_all_mutators: extern "C" fn(VMWorkerThread),
     pub resume_mutators: extern "C" fn(VMWorkerThread),
     pub get_mutators: extern "C" fn(
