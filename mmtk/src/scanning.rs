@@ -18,7 +18,7 @@ use mmtk::util::Address;
 use std::mem::size_of;
 use mmtk::memory_manager::is_mmtk_object;
 
-
+use std::os::raw::c_void;
 
 pub struct VMScanning {}
 
@@ -41,23 +41,25 @@ impl Scanning<DummyVM> for VMScanning {
         unimplemented!()
     }
     fn scan_vm_specific_roots(_tls: VMWorkerThread, _factory: impl RootsWorkFactory<DummyVMSlot>) {
-        println!("entered scan_vm_specific_roots");
-	println!(" ");
-	
-	let isymtab_ent : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)()};
-	println!("isymtab_ent ran: {}", isymtab_ent);
-	let sptab_ent : i32 = unsafe { ((*UPCALLS).num_entries_in_sptab)()};
-	//let sptab_ent : i32 = 8;
-        //let entries_in_isymtab : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)() };
-        //let first_in_sptab : *mut MyStruct = unsafe { ((*UPCALLS).first_in_sptab)()};
-        //let first_in_isymtab: *mut MyStruct = unsafe { ((*UPCALLS).first_in_isymtab)()};
-        // Write a for loop walking a pointer from first_in_sptab for num_entries_in_sptab and put the second slot in a vec
-	
-	println!("sptab entries: {}", sptab_ent);
-	println!("isymtab entries: {}", isymtab_ent);
+        println!(" ");
+	println!("scan_vm_specific_roots");
+        
+	let isymtab_entries : i32 = unsafe { ((*UPCALLS).num_entries_in_isymtab)()};
+	let sptab_entries : i32 = unsafe { ((*UPCALLS).num_entries_in_sptab)()};
+        let first_in_sptab : *mut MyStruct = unsafe { ((*UPCALLS).first_in_sptab)()};
+        let first_in_isymtab: *mut MyStruct = unsafe { ((*UPCALLS).first_in_isymtab)()};
 
+	
+	// Write a for loop walking a pointer from first_in_sptab for num_entries_in_sptab and put the second slot in a vec
+	
+	let mut root_vector: Vec<*mut c_void> = Vec::new();
+	for i in 0..sptab_entries {
+            let current_entry = first_in_sptab.add(i as usize);
+            let varp = (*current_entry).void_ptr;
+            root_vector.push(varp);
+        }
 
-        unimplemented!()
+        //unimplemented!()
     }
     fn scan_object<EV: SlotVisitor<DummyVMSlot>>(
         _tls: VMWorkerThread,
