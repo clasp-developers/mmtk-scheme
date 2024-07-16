@@ -53,11 +53,22 @@ impl Scanning<DummyVM> for VMScanning {
 	// Write a for loop walking a pointer from first_in_sptab for num_entries_in_sptab and put the second slot in a vec
 	
 	let mut root_vector: Vec<*mut c_void> = Vec::new();
-	for i in 0..sptab_entries {
+	unsafe {
+        for i in 0..sptab_entries {
             let current_entry = first_in_sptab.add(i as usize);
-            let varp = (*current_entry).void_ptr;
-            root_vector.push(varp);
+            if !current_entry.is_null() {
+                let varp = (*current_entry).void_ptr;
+                root_vector.push(varp);
+            } else {
+                println!("Encountered a null pointer at index {}", i);
+            }
         }
+    	}
+
+	println!("Contents of root_vector:");
+    	for (index, ptr) in root_vector.iter().enumerate() {
+            println!("Index {}: {:p}", index, ptr);
+    	}
 
         //unimplemented!()
     }
