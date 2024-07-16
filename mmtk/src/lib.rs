@@ -73,8 +73,8 @@ pub struct scheme_Upcalls {
     pub scan_vm_specific_roots: extern "C" fn(VMWorkerThread),
     pub num_entries_in_sptab: extern "C" fn() -> i32,
     pub num_entries_in_isymtab: extern "C" fn() -> i32,
-    pub first_in_sptab: extern "C" fn() -> *mut MyStruct,
-    pub first_in_isymtab: extern "C" fn() -> *mut MyStruct,
+    pub first_in_sptab: unsafe extern "C" fn() -> *mut MyStruct,
+    pub first_in_isymtab: unsafe extern "C" fn() -> *mut MyStruct,
     
 }
 
