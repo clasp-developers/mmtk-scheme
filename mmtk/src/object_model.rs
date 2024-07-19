@@ -5,6 +5,15 @@ use mmtk::vm::*;
 
 pub struct VMObjectModel {}
 
+/// PolicySpecific mark-and-nursery bits metadata spec
+/// 2-bits per object
+pub(crate) const LOS_METADATA_SPEC: VMLocalLOSMarkNurserySpec =
+    VMLocalLOSMarkNurserySpec::side_first();
+
+pub(crate) const MARKING_METADATA_SPEC: VMLocalMarkBitSpec =
+    VMLocalMarkBitSpec::side_after(LOS_METADATA_SPEC.as_spec());
+
+
 // This is the offset from the allocation result to the object reference for the object.
 // Many methods like `address_to_ref` and `ref_to_address` use this constant.
 // For bindings that this offset is not a constant, you can implement the calculation in the methods, and
@@ -28,7 +37,7 @@ impl ObjectModel<DummyVM> for VMObjectModel {
     // The other metadata can be put in the side metadata.
     const LOCAL_FORWARDING_BITS_SPEC: VMLocalForwardingBitsSpec =
         VMLocalForwardingBitsSpec::in_header(0);
-    const LOCAL_MARK_BIT_SPEC: VMLocalMarkBitSpec = VMLocalMarkBitSpec::in_header(0);
+    const LOCAL_MARK_BIT_SPEC: VMLocalMarkBitSpec = MARKING_METADATA_SPEC;
     const LOCAL_LOS_MARK_NURSERY_SPEC: VMLocalLOSMarkNurserySpec =
         VMLocalLOSMarkNurserySpec::in_header(0);
 
