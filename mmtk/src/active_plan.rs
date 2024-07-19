@@ -32,13 +32,13 @@ impl ActivePlan<DummyVM> for VMActivePlan {
     }
 
     fn mutators<'a>() -> Box<dyn Iterator<Item = &'a mut Mutator<DummyVM>> + 'a> {
-        let mut mutators = VecDeque::new();
-	let null_mutator = *mut Mutator<DummyVM> = ptr::null_mut();
+        let mut new_mutators = VecDeque::new();
+	let null_mutator : *mut Mutator<DummyVM> = ptr::null_mut();
 	Box::new(SillyIterator {
             mutators,
             phantom_data: PhantomData,
         });
-	mutators.push_back(null_mutator);
+	new_mutators.push_back(unsafe { &mut *null_mutator} );
         unimplemented!()
     }
 }
