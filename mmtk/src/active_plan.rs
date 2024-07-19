@@ -3,7 +3,18 @@ use mmtk::util::opaque_pointer::*;
 use mmtk::vm::ActivePlan;
 use mmtk::Mutator;
 
+use std::collections::VecDeque;
+use std::marker::PhantomData;
+use std::ptr;
+
 pub struct VMActivePlan {}
+
+//box needs 1 entry thats zero because we only have one mutator
+
+struct SillyIterator<'a>{
+    mutators: VecDeque<&'a mut Mutator<DummyVM>>,
+    phantom_data: PhantomData<&'a ()>,
+}
 
 // Documentation: https://docs.mmtk.io/api/mmtk/vm/active_plan/trait.ActivePlan.html
 impl ActivePlan<DummyVM> for VMActivePlan {
@@ -21,6 +32,13 @@ impl ActivePlan<DummyVM> for VMActivePlan {
     }
 
     fn mutators<'a>() -> Box<dyn Iterator<Item = &'a mut Mutator<DummyVM>> + 'a> {
+        let mut mutators = VecDeque::new();
+	let null_mutator = *mut Mutator<DummyVM> = ptr::null_mut();
+	Box::new(SillyIterator {
+            mutators,
+            phantom_data: PhantomData,
+        });
+	mutators.push_back(null_mutator);
         unimplemented!()
     }
 }
