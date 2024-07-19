@@ -29,7 +29,7 @@ impl Scanning<DummyVM> for VMScanning {
         _mutator: &'static mut Mutator<DummyVM>,
         _factory: impl RootsWorkFactory<DummyVMSlot>,
     ) {
-        let value: usize = 42; // Declare a usize value on the stack
+	let value: usize = 42; // Declare a usize value on the stack
         let stack_top: *const usize = unsafe { ((*UPCALLS).mutator_stack_top)(_mutator) };
         let stack_bottom: *const usize = &value; // Take its address
 
@@ -56,6 +56,23 @@ impl Scanning<DummyVM> for VMScanning {
 	unsafe {
         for i in 0..sptab_entries {
             let current_entry = first_in_sptab.add(i as usize);
+            if !current_entry.is_null(){
+                let varp = (*current_entry).void_ptr;
+		//let varp_addy = Address::from_mut_ptr(varp);
+		root_vector.push(varp);
+		/*
+		if mmtk::memory_manager::is_mmtk_object(varp_addy){
+                   root_vector.push(varp);
+		}
+		*/
+            } else {
+                println!("Encountered a null pointer at index {}", i);
+            }
+        }
+    	}
+	unsafe {
+        for i in 0..isymtab_entries {
+            let current_entry = first_in_isymtab.add(i as usize);
             if !current_entry.is_null() {
                 let varp = (*current_entry).void_ptr;
                 root_vector.push(varp);
@@ -64,13 +81,13 @@ impl Scanning<DummyVM> for VMScanning {
             }
         }
     	}
-
 	println!("Contents of root_vector:");
     	for (index, ptr) in root_vector.iter().enumerate() {
             println!("Index {}: {:p}", index, ptr);
     	}
+    
+	println!("end of scan_vm");
 
-        //unimplemented!()
     }
     fn scan_object<EV: SlotVisitor<DummyVMSlot>>(
         _tls: VMWorkerThread,
