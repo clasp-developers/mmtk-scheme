@@ -16,6 +16,14 @@ struct SillyIterator<'a>{
     phantom_data: PhantomData<&'a ()>,
 }
 
+impl<'a> Iterator for SillyIterator<'a> {
+    type Item = &'a mut Mutator<DummyVM>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.mutators.pop_front()
+    }
+}
+
 // Documentation: https://docs.mmtk.io/api/mmtk/vm/active_plan/trait.ActivePlan.html
 impl ActivePlan<DummyVM> for VMActivePlan {
     fn number_of_mutators() -> usize {
@@ -33,15 +41,18 @@ impl ActivePlan<DummyVM> for VMActivePlan {
 
     fn mutators<'a>() -> Box<dyn Iterator<Item = &'a mut Mutator<DummyVM>> + 'a> {
         let mut new_mutators = VecDeque::new();
+	let null_mutator : *mut Mutator<DummyVM> = ptr::null_mut();
 	
-        let null_mutator : *mut Mutator<DummyVM> = ptr::null_mut();
-        new_mutators.push_back(unsafe { &mut *null_mutator} );
-
+	if !null_mutator.is_null() {
+            unsafe {
+                new_mutators.push_back(&mut *null_mutator);
+            }
+        }
+	
 	Box::new(SillyIterator {
             mutators: new_mutators,
             phantom_data: PhantomData,
-        });
+        })
 	
-	unimplemented!()
     }
 }
